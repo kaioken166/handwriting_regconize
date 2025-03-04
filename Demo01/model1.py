@@ -1,7 +1,6 @@
-import tensorflow as tf
-from tensorflow import keras
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from tensorflow import keras
 
 # 1. Tải dữ liệu MNIST
 (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
@@ -13,10 +12,10 @@ x_test = x_test.reshape(-1, 28, 28, 1)
 
 # 3. Xây dựng mô hình CNN
 model = keras.Sequential([
-    keras.layers.Conv2D(32, (3,3), activation='relu', input_shape=(28,28,1)),
-    keras.layers.MaxPooling2D(2,2),
-    keras.layers.Conv2D(64, (3,3), activation='relu'),
-    keras.layers.MaxPooling2D(2,2),
+    keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+    keras.layers.MaxPooling2D(2, 2),
+    keras.layers.Conv2D(64, (3, 3), activation='relu'),
+    keras.layers.MaxPooling2D(2, 2),
     keras.layers.Flatten(),
     keras.layers.Dense(128, activation='relu'),
     keras.layers.Dropout(0.5),
@@ -42,9 +41,8 @@ predictions = model.predict(x_test[:5])
 model.save("my_model2.h5")
 
 # Hiển thị kết quả
-for i in range(15):
+for i in range(5):
     plt.imshow(x_test[i].reshape(28, 28), cmap='gray')
     plt.title(f"Dự đoán: {np.argmax(predictions[i])}, Thực tế: {y_test[i]}")
     plt.axis('off')
     plt.show()
-

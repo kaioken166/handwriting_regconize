@@ -1,7 +1,6 @@
-import tensorflow as tf
-from tensorflow import keras
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from tensorflow import keras
 
 # 1. Tải dữ liệu MNIST
 (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()

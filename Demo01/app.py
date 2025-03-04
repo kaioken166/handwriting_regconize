@@ -2,7 +2,7 @@ import cv2
 import matplotlib.pyplot as plt
 
 # Đọc ảnh
-image_path = "new_image.png"
+image_path = "new_image6.jpg"
 # img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
 # Cải thiện độ tương phản bằng cách dùng adaptive threshold
