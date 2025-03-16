@@ -10,7 +10,7 @@ x_train, x_test = x_train / 255.0, x_test / 255.0  # Chuẩn hóa về [0,1]
 x_train = x_train.reshape(-1, 28, 28, 1)  # Reshape cho CNN
 x_test = x_test.reshape(-1, 28, 28, 1)
 
-model = keras.models.load_model("my_model2.h5")
+model = keras.models.load_model("model/my_model2.h5")
 
 predictions = model.predict(x_test[:15])
 

@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 
 # Tải mô hình đã huấn luyện
-model = load_model('my_model2.h5')
+model = load_model('model/my_model2.h5')
 
 # Đọc và tiền xử lý hình ảnh
 image = cv2.imread('img/new_image4.jpg', cv2.IMREAD_GRAYSCALE)

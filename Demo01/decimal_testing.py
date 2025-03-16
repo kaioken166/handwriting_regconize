@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tensorflow import keras
 
-model = keras.models.load_model("my_model2.h5")  # Load model chữ số
+model = keras.models.load_model("model/my_model2.h5")  # Load model chữ số
 
 def extract_characters(image_path):
     img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)  # Đọc ảnh grayscale

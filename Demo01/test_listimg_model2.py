@@ -4,7 +4,7 @@ from tensorflow import keras
 import os
 
 # Load model chỉ một lần
-model = keras.models.load_model("my_model2.h5")
+model = keras.models.load_model("model/my_model2.h5")
 
 # Danh sách các ảnh cần xử lý
 # image_paths = ["img/new_image4.jpg", "img/new_image5.jpg", "img/new_image6.jpg", "img/new_image7.png"]  # Cập nhật danh sách ảnh của bạn
