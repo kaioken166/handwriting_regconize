@@ -1,4 +1,6 @@
-import cv2
+import os
 
-img = cv2.imread("new_image.png", cv2.IMREAD_UNCHANGED)
-print(type(img))  # Kiểm tra xem có phải None không
+augmented_folder = "dataset/augmented_images"
+augmented_files = [f for f in os.listdir(augmented_folder) if f.endswith(".png")]
+
+print(f"Số lượng ảnh trong {augmented_folder}: {len(augmented_files)}")
