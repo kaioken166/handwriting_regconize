@@ -34,12 +34,12 @@ def split_image(image_path, output_folder, rows=10, cols=5):  # Đúng số hàn
             new_j = j + (i % 2) * cols  # Điều chỉnh vị trí cột dựa vào hàng lẻ/chẵn
             
             # Lưu ảnh số thập phân theo thứ tự mong muốn
-            filename = os.path.join(output_folder, f"digit_{new_i},{new_j}.png")
+            filename = os.path.join(output_folder, f"digit2_{new_i},{new_j}.png")
             cv2.imwrite(filename, cell_image)
     
     print(f"Đã tách và lưu {rows * cols} ảnh vào thư mục '{output_folder}'")
 
 # Sử dụng hàm
-image_path = "img/photo_2025-03-19_06-17-13.jpg"  # Thay bằng đường dẫn thực tế
+image_path = "img/photo_2025-03-24_18-45-14.jpg"  # Thay bằng đường dẫn thực tế
 output_folder = "split_digits"
 split_image(image_path, output_folder)

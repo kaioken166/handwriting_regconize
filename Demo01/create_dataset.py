@@ -1,28 +1,36 @@
 import os
 import pandas as pd
 
-# Đọc file nhãn gốc
-labels_df = pd.read_csv("labels.csv")  # Giả sử có cột: image_name, label
-
-# Thư mục chứa ảnh tăng cường
+# Thư mục ảnh gốc và ảnh tăng cường
+original_folder = "dataset/images"
 augmented_folder = "dataset/augmented_images"
 
-# Danh sách ảnh trong thư mục ảnh tăng cường
-augmented_data = []
+# Danh sách ảnh từ cả hai thư mục
+original_images = [f for f in os.listdir(original_folder) if f.endswith(".png") or f.endswith(".jpg")]
+augmented_images = [f for f in os.listdir(augmented_folder) if f.endswith(".png")]
 
-for aug_image in os.listdir(augmented_folder):
-    if aug_image.endswith(".png"):  # Đảm bảo chỉ lấy ảnh
-        if aug_image in labels_df["image_name"].values:
-            label = labels_df[labels_df["image_name"] == aug_image]["label"].values[0]
-            augmented_data.append([aug_image, label])
+# Hàm trích xuất nhãn từ tên ảnh
+def extract_label(image_name):
+    try:
+        # Lấy phần sau "digit_" và trước dấu "_" đầu tiên
+        label = image_name.split("digit_")[1].split("_")[0]
+        return label
+    except IndexError:
+        return None  # Nếu lỗi, trả về None để bỏ qua ảnh đó
 
-# Tạo DataFrame cho ảnh đã tăng cường
-augmented_df = pd.DataFrame(augmented_data, columns=["image_name", "label"])
+# Tạo danh sách dữ liệu ảnh và nhãn
+data = []
 
-# Gộp cả ảnh gốc và ảnh tăng cường thành 1 dataset
-full_dataset = pd.concat([labels_df, augmented_df])
+for image in original_images + augmented_images:
+    label = extract_label(image)
+    if label is not None:  # Đảm bảo ảnh có nhãn hợp lệ
+        data.append([image, label])
 
-# Lưu thành file mới
-full_dataset.to_csv("augmented_labels.csv", index=False)
+# Chuyển dữ liệu thành DataFrame
+labels_df = pd.DataFrame(data, columns=["image_name", "label"])
 
-print(f"Tổng số ảnh sau khi tăng cường dữ liệu: {len(full_dataset)}")
+# Lưu thành file labels.csv
+labels_df.to_csv("labels.csv", index=False)
+
+print(f"Đã tạo labels.csv với {len(labels_df)} ảnh.")
+print(labels_df.head())  # Xem 5 dòng đầu tiên

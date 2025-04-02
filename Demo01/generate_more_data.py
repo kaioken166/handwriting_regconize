@@ -16,7 +16,7 @@ datagen = ImageDataGenerator(
 
 # Thư mục chứa ảnh gốc
 image_folder = "dataset/images"
-output_folder = "dataset/augmented_images"
+output_folder = "dataset/images"
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
