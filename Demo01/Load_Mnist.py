@@ -1,27 +1,21 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from tensorflow.keras.datasets import mnist
-import cv2
 import os
+
+import cv2
+import numpy as np
+from tensorflow.keras.datasets import mnist
 
 # Tải tập dữ liệu MNIST
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
+
 # Hàm ghép số thập phân (giới hạn số nguyên từ 0 đến 10 và phần thập phân từ 0-9)
 def create_decimal_image():
-    # Chọn số nguyên từ 0 đến 10 (bao gồm số 10)
-    idx1 = np.random.choice(np.where(y_train <= 10)[0])  # Chọn số nguyên từ 0 đến 10
-    # idx1 = 10  # Chọn số nguyên từ 0 đến 10
+    idx1 = np.random.choice(np.where(y_train < 10)[0])  # Chọn số nguyên từ 0 đến 9
 
     # Chọn phần thập phân từ 0 đến 9
     idx2 = np.random.choice(np.where(y_train < 10)[0])  # Chọn phần thập phân từ 0 đến 9
 
-    # Kiểm tra xem nếu số nguyên là 10, thì chỉ cần ghép ảnh của '1' và '0'
-    if y_train[idx1] == 10:
-        digit1 = np.hstack([x_train[np.where(y_train == 1)[0][0]], x_train[np.where(y_train == 0)[0][0]]])  # Ghép '1' và '0'
-    else:
-        digit1 = x_train[idx1]  # Phần nguyên
-
+    digit1 = x_train[idx1]  # Phần nguyên
     digit2 = x_train[idx2]  # Phần thập phân
 
     # Tạo ảnh dấu phẩy (dấu ',')
@@ -33,6 +27,7 @@ def create_decimal_image():
 
     # Trả về ảnh và nhãn tương ứng
     return decimal_image, y_train[idx1], y_train[idx2]
+
 
 # Tạo thư mục lưu ảnh
 save_dir = "decimal_digits"
