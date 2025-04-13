@@ -1,55 +1,89 @@
 import cv2
 import numpy as np
 from tensorflow.keras.models import load_model
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from PIL import Image, ImageTk
 
-# Đường dẫn đến file mô hình (cố định, bạn có thể thay đổi nếu cần)
-model_path = 'decimal_digit_model.h5'
 # Load mô hình
+model_path = 'decimal_digit_model_2.h5'
 model = load_model(model_path)
 
+# Danh sách classes (từ 0.0 đến 10.0 với bước 0.1)
+classes = [round(i * 0.1, 1) for i in range(101)]  # [0.0, 0.1, ..., 10.0]
 
-def predict_decimal_digit(image_path):
-    """
-    Hàm dự đoán số thập phân từ ảnh đầu vào sử dụng mô hình đã huấn luyện.
+class DecimalDigitApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Decimal Digit Recognition")
+        self.root.geometry("400x500")  # Đặt kích thước cửa sổ
 
-    Args:
-        image_path (str): Đường dẫn đến ảnh cần dự đoán.
-    """
+        # Tạo giao diện
+        self.label = tk.Label(root, text="Tải ảnh để dự đoán số thập phân", font=("Arial", 14))
+        self.label.pack(pady=10)
 
-    # Danh sách classes (từ 0.0 đến 10.0 với bước 0.1)
-    classes = [round(i * 0.1, 1) for i in range(101)]  # [0.0, 0.1, ..., 10.0]
+        # Nút tải ảnh
+        self.upload_button = tk.Button(root, text="Tải ảnh", command=self.upload_image, font=("Arial", 12))
+        self.upload_button.pack(pady=5)
 
-    # Đọc ảnh dưới dạng grayscale
-    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    if img is None:
-        print(f"Không thể đọc ảnh từ đường dẫn: {image_path}")
-        return
+        # Nút xóa
+        self.clear_button = tk.Button(root, text="Xóa", command=self.clear, font=("Arial", 12))
+        self.clear_button.pack(pady=5)
 
-    # Resize ảnh về kích thước 28x66 (điều chỉnh nếu mô hình của bạn yêu cầu khác)
-    img_resized = cv2.resize(img, (66, 28))
+        # Nhãn hiển thị kết quả
+        self.result_label = tk.Label(root, text="Kết quả: Chưa có dự đoán", font=("Arial", 12), fg="blue")
+        self.result_label.pack(pady=10)
 
-    # Reshape và chuẩn hóa ảnh
-    img_processed = img_resized.reshape(1, 28, 66, 1) / 255.0
+        # Nhãn hiển thị ảnh
+        self.image_label = tk.Label(root)
+        self.image_label.pack(pady=10)
 
-    # Dự đoán lớp của ảnh
-    pred = model.predict(img_processed)
-    print(f"Xác suất dự đoán: {pred[0]}")
-    pred_class_index = np.argmax(pred, axis=1)[0]
-    print(f"Chỉ số lớp dự đoán: {pred_class_index}")
+    def upload_image(self):
+        # Mở hộp thoại để chọn file ảnh
+        file_path = filedialog.askopenfilename(
+            filetypes=[("Image files", "*.png *.jpg *.jpeg *.bmp")]
+        )
+        if not file_path:
+            return
 
-    # Ánh xạ chỉ số lớp sang giá trị thực
-    predicted_value = classes[pred_class_index]
+        # Đọc và xử lý ảnh
+        img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+        if img is None:
+            messagebox.showerror("Lỗi", f"Không thể đọc ảnh từ: {file_path}")
+            return
 
-    # In kết quả ra console
-    print(f"Đường dẫn ảnh: {image_path}")
-    print(f"Kết quả dự đoán: {predicted_value}")
+        # Đảo màu nếu cần
+        if np.mean(img) < 127:
+            img = 255 - img
 
+        # Resize ảnh về kích thước 28x66 để dự đoán
+        img_resized = cv2.resize(img, (66, 28))
+
+        # Reshape và chuẩn hóa ảnh
+        img_processed = img_resized.reshape(1, 28, 66, 1) / 255.0
+
+        # Dự đoán
+        pred = model.predict(img_processed, verbose=0)
+        pred_class_index = np.argmax(pred, axis=1)[0]
+        predicted_value = classes[pred_class_index]
+
+        # Cập nhật kết quả trên giao diện
+        self.result_label.config(text=f"Kết quả: {predicted_value}")
+
+        # Hiển thị ảnh trên GUI (phóng to để dễ nhìn)
+        img_display = cv2.resize(img, (132, 56))  # Phóng to gấp đôi
+        img_display = Image.fromarray(img_display)
+        img_display = ImageTk.PhotoImage(img_display)
+        self.image_label.config(image=img_display)
+        self.image_label.image = img_display  # Giữ tham chiếu để ảnh không bị xóa
+
+    def clear(self):
+        # Xóa kết quả và ảnh hiển thị
+        self.result_label.config(text="Kết quả: Chưa có dự đoán")
+        self.image_label.config(image='')
+        self.image_label.image = None  # Xóa tham chiếu ảnh
 
 if __name__ == "__main__":
-    # Đường dẫn ảnh cần dự đoán
-    image_path = 'decimal_digits/7,3_455.png'  # Thay bằng đường dẫn thực tế
-
-    # Gọi hàm dự đoán
-    predict_decimal_digit(image_path)
-
-
+    root = tk.Tk()
+    app = DecimalDigitApp(root)
+    root.mainloop()
