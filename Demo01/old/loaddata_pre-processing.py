@@ -7,7 +7,7 @@ import cv2
 import os
 
 data_dir = "../dataset/images"
-labels_file = "../labels_continue.csv"
+labels_file = "../backup/labels_continue.csv"
 img_height, img_width = 100, 100
 max_length = 5
 num_classes = 11  # 10 số (0-9) + dấu phẩy
