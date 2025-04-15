@@ -30,15 +30,19 @@ class MultiDigitRecognizerApp(tk.Tk):
         self.canvas = tk.Canvas(self, width=800, height=400, bg="white", cursor="cross")
         self.label = tk.Label(self, text="Vẽ các chữ số", font=("Helvetica", 24))
         self.classify_btn = tk.Button(self, text="Recognise", command=self.classify_handwriting)
+
+        self.classify_decimal_btn = tk.Button(self, text="Recognize Decimal", command=self.classify_decimal)
+
         self.button_clear = tk.Button(self, text="Clear", command=self.clear_all)
         self.button_image = tk.Button(self, text="Recognize from Image", command=self.recognize_from_image)
 
         # Sắp xếp giao diện
-        self.canvas.grid(row=0, column=0, pady=2, sticky="W", columnspan=3)
-        self.label.grid(row=1, column=0, pady=2, padx=2, columnspan=3)
-        self.classify_btn.grid(row=2, column=1, pady=2, padx=2)
+        self.canvas.grid(row=0, column=0, pady=2, sticky="W", columnspan=4)  # Cập nhật columnspan
+        self.label.grid(row=1, column=0, pady=2, padx=2, columnspan=4)
         self.button_clear.grid(row=2, column=0, pady=2)
-        self.button_image.grid(row=2, column=2, pady=2, padx=2)
+        self.classify_btn.grid(row=2, column=1, pady=2, padx=2)
+        self.classify_decimal_btn.grid(row=2, column=2, pady=2, padx=2)  # Đặt nút mới
+        self.button_image.grid(row=2, column=3, pady=2, padx=2)
 
         # Bind sự kiện vẽ
         self.canvas.bind("<B1-Motion>", self.draw_lines)
@@ -63,6 +67,35 @@ class MultiDigitRecognizerApp(tk.Tk):
         digits = self.predict_multiple_digits(img, debug=False)
         if digits:
             self.label.configure(text=f"Dự đoán: {''.join(map(str, digits))}")
+        else:
+            self.label.configure(text="Không tìm thấy chữ số")
+
+        # Hiển thị ảnh với khung và nhãn
+        self.show_result(img, digits)
+
+    def classify_decimal(self):
+        # Lấy ảnh từ canvas
+        HWND = self.canvas.winfo_id()
+        rect = win32gui.GetWindowRect(HWND)
+        img = ImageGrab.grab(rect)
+
+        # Nhận diện nhiều chữ số (logic cũ)
+        digits = self.predict_multiple_digits(img, debug=False)
+        if digits:
+            # Logic cho số thập phân
+            if len(digits) == 3:  # Trường hợp nhận diện ba số: x, y, z → x.z
+                x, y, z = digits
+                if y in {0, 1, 2, 3, 4, 5, 6, 7, 9}:  # Kiểm tra y có đại diện dấu phẩy không
+                    result = f"{x}.{z}"
+                else:
+                    result = ''.join(map(str, digits))  # Giữ nguyên nếu y không phải dấu phẩy
+            elif len(digits) == 2:  # Trường hợp nhận diện hai số: x, y → x.y
+                x, y = digits
+                result = f"{x}.{y}"
+            else:
+                result = ''.join(map(str, digits))  # Trường hợp khác, giữ nguyên
+
+            self.label.configure(text=f"Dự đoán: {result}")
         else:
             self.label.configure(text="Không tìm thấy chữ số")
 
