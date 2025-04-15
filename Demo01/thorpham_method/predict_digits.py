@@ -1,16 +1,18 @@
+# predict_digit.py
 import tkinter as tk
-from PIL import Image, ImageDraw, ImageGrab
-import numpy as np
-import cv2
-from skimage.feature import hog
+
 import joblib
+import numpy as np
 import win32gui
+from PIL import ImageGrab
+from skimage.feature import hog
+
 
 class DigitRecognizerApp(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
         self.title("Vẽ và Nhận diện Chữ số")
-        self.geometry("400x500")
+        self.geometry("500x500")
 
         self.x = self.y = 0
 
@@ -43,8 +45,8 @@ class DigitRecognizerApp(tk.Tk):
     def draw_lines(self, event):
         self.x = event.x
         self.y = event.y
-        r = 8  # Độ dày nét vẽ
-        self.canvas.create_oval(self.x-r, self.y-r, self.x+r, self.y+r, fill="black")
+        r = 5  # Độ dày nét vẽ
+        self.canvas.create_oval(self.x - r, self.y - r, self.x + r, self.y + r, fill="black")
 
     def classify_handwriting(self):
         # Lấy handle của canvas
@@ -70,6 +72,7 @@ class DigitRecognizerApp(tk.Tk):
         # Dự đoán
         digit = self.model.predict([hog_feature])[0]
         return digit
+
 
 if __name__ == "__main__":
     app = DigitRecognizerApp()

@@ -1,11 +1,12 @@
+# model.py
 import cv2
 import joblib
+import matplotlib.pyplot as plt
 import numpy as np
+from skimage.feature import hog
 from sklearn import svm
 from sklearn.metrics import accuracy_score
-from skimage.feature import hog
 from tensorflow.keras.datasets import mnist
-import matplotlib.pyplot as plt
 
 # 1. Tải và tiền xử lý dữ liệu MNIST
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
@@ -22,7 +23,7 @@ def extract_hog_features(images):
         # Đảm bảo ảnh ở định dạng uint8 cho HOG
         img_uint8 = (img * 255).astype(np.uint8)
         # Tính toán HOG
-        feature = hog(img_uint8, pixels_per_cell=(8, 8), cells_per_block=(2, 2), block_norm='L2-Hys')
+        feature = hog(img_uint8, pixels_per_cell=(4, 4), cells_per_block=(2, 2), block_norm='L2-Hys')
         hog_features.append(feature)
     return np.array(hog_features)
 

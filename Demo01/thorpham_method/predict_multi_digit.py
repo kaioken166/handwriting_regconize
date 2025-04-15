@@ -1,12 +1,14 @@
+# predict_multi_digit.py
 import tkinter as tk
 from tkinter import filedialog
-from PIL import Image, ImageGrab
-import numpy as np
+
 import cv2
-from skimage.feature import hog
 import joblib
-import win32gui
 import matplotlib.pyplot as plt
+import numpy as np
+import win32gui
+from PIL import Image, ImageGrab
+from skimage.feature import hog
 
 
 class MultiDigitRecognizerApp(tk.Tk):
@@ -58,7 +60,7 @@ class MultiDigitRecognizerApp(tk.Tk):
         img = ImageGrab.grab(rect)
 
         # Nhận diện nhiều chữ số
-        digits = self.predict_multiple_digits(img, debug=True)
+        digits = self.predict_multiple_digits(img, debug=False)
         if digits:
             self.label.configure(text=f"Dự đoán: {''.join(map(str, digits))}")
         else:
@@ -123,7 +125,7 @@ class MultiDigitRecognizerApp(tk.Tk):
             x, y, w, h = cv2.boundingRect(contour)
 
             # Nới lỏng ngưỡng contour
-            if w < 1 or h < 1 or w > 800 or h > 800:
+            if w < 10 or h < 10 or w > 600 or h > 600:
                 continue
 
             # Trích xuất chữ số
