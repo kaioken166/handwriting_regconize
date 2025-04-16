@@ -23,7 +23,7 @@ def extract_hog_features(images):
         # Đảm bảo ảnh ở định dạng uint8 cho HOG
         img_uint8 = (img * 255).astype(np.uint8)
         # Tính toán HOG
-        feature = hog(img_uint8, pixels_per_cell=(4, 4), cells_per_block=(2, 2), block_norm='L2-Hys')
+        feature = hog(img_uint8, orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1), block_norm='L2-Hys')
         hog_features.append(feature)
     return np.array(hog_features)
 
@@ -36,7 +36,7 @@ X_test_hog = extract_hog_features(X_test)
 
 # 3. Huấn luyện mô hình SVM
 print("Huấn luyện mô hình SVM...")
-clf = svm.SVC(kernel='rbf', C=1.0, gamma='scale')
+clf = svm.SVC(kernel='rbf', C=10, gamma='scale')
 clf.fit(X_train_hog, y_train)
 
 # 4. Dự đoán và đánh giá
@@ -58,7 +58,7 @@ def predict_digit(image_path, model):
 
     # Trích xuất HOG
     img_uint8 = (img * 255).astype(np.uint8)
-    hog_feature = hog(img_uint8, pixels_per_cell=(8, 8), cells_per_block=(2, 2), block_norm='L2-Hys')
+    hog_feature = hog(img_uint8, orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1), block_norm='L2-Hys')
 
     # Dự đoán
     digit = model.predict([hog_feature])[0]

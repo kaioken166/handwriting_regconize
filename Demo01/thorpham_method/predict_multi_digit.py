@@ -1,6 +1,6 @@
 # predict_multi_digit.py
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 
 import cv2
 import joblib
@@ -16,7 +16,7 @@ class MultiDigitRecognizerApp(tk.Tk):
         tk.Tk.__init__(self)
         self.title("Vẽ và Nhận diện Nhiều Chữ số")
         self.geometry("900x600")
-
+        self.digits = []
         self.x = self.y = 0
 
         # Load mô hình SVM
@@ -41,7 +41,7 @@ class MultiDigitRecognizerApp(tk.Tk):
         self.label.grid(row=1, column=0, pady=2, padx=2, columnspan=4)
         self.button_clear.grid(row=2, column=0, pady=2)
         self.classify_btn.grid(row=2, column=1, pady=2, padx=2)
-        self.classify_decimal_btn.grid(row=2, column=2, pady=2, padx=2)  # Đặt nút mới
+        self.classify_decimal_btn.grid(row=2, column=2, pady=2, padx=2)
         self.button_image.grid(row=2, column=3, pady=2, padx=2)
 
         # Bind sự kiện vẽ
@@ -50,6 +50,7 @@ class MultiDigitRecognizerApp(tk.Tk):
     def clear_all(self):
         self.canvas.delete("all")
         self.label.configure(text="Vẽ các chữ số")
+        self.digits = []
 
     def draw_lines(self, event):
         self.x = event.x
@@ -158,7 +159,7 @@ class MultiDigitRecognizerApp(tk.Tk):
             x, y, w, h = cv2.boundingRect(contour)
 
             # Nới lỏng ngưỡng contour
-            if w < 10 or h < 10 or w > 600 or h > 600:
+            if w < 20 or h < 20 or w > 600 or h > 600:
                 continue
 
             # Trích xuất chữ số
@@ -175,9 +176,7 @@ class MultiDigitRecognizerApp(tk.Tk):
             # Chuẩn hóa và trích xuất HOG
             digit = digit.astype('float32') / 255.0
             digit_uint8 = (digit * 255).astype(np.uint8)
-            hog_feature = hog(digit_uint8, pixels_per_cell=(8, 8), cells_per_block=(2, 2),
-                              block_norm='L2-Hys')
-
+            hog_feature = hog(digit_uint8, orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1), block_norm='L2-Hys')
             # Dự đoán
             pred = self.model.predict([hog_feature])[0]
             predictions.append(pred)
